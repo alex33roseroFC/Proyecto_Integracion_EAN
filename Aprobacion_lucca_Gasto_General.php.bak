@@ -1,0 +1,413 @@
+<?php
+// Cabeceras para evitar caché SIEMPRE al inicio
+if (!headers_sent()) {
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    header("Expires: 0");
+}
+require_once 'include.php';
+require_once 'config.php';
+// --- BLOQUE AJAX ÚNICO: SOLO JSON PURO, limpiar buffers y salir ---
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['ajax']) && $_POST['ajax'] === '1'
+) {
+    // Limpiar cualquier buffer de salida
+    while (ob_get_level()) { ob_end_clean(); }
+    header('Content-Type: application/json');
+    $response = ['success' => false];
+    // Actualización masiva por colaborador y área/proyecto
+    if (isset($_POST['accion']) && $_POST['accion'] === 'masivo' && isset($_POST['numero_empleado']) && (isset($_POST['aprobado_coordinador']) || isset($_POST['rechazado_coordinador'])) && isset($_POST['codigo_affaire']) && isset($_POST['area_funcional'])) {
+        $numero_empleado = $conn->real_escape_string($_POST['numero_empleado']);
+        $codigo_affaire = $conn->real_escape_string($_POST['codigo_affaire']);
+        $area_funcional = $conn->real_escape_string($_POST['area_funcional']);
+        if (isset($_POST['aprobado_coordinador'])) {
+            $aprobado = $_POST['aprobado_coordinador'] === '1' ? 1 : 0;
+            $sql = "UPDATE horas_dia SET aprobado_coordinador=$aprobado, rechazado_coordinador=0 WHERE numero_empleado='$numero_empleado' AND codigo_affaire='$codigo_affaire' AND area_funcional='$area_funcional' AND Estado_Aprobacion = 'Aprobado En Curso'";
+            $response['success'] = $conn->query($sql) ? true : false;
+            if(!$response['success']) $response['error'] = $conn->error;
+        } elseif (isset($_POST['rechazado_coordinador'])) {
+            $rechazado = $_POST['rechazado_coordinador'] === '1' ? 1 : 0;
+            $sql = "UPDATE horas_dia SET rechazado_coordinador=$rechazado, aprobado_coordinador=0 WHERE numero_empleado='$numero_empleado' AND codigo_affaire='$codigo_affaire' AND area_funcional='$area_funcional' AND Estado_Aprobacion = 'Aprobado En Curso'";
+            $response['success'] = $conn->query($sql) ? true : false;
+            if(!$response['success']) $response['error'] = $conn->error;
+        }
+    }
+    // Actualización individual (por id)
+    elseif (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        if (isset($_POST['aprobado_coordinador'])) {
+            $aprobado = $_POST['aprobado_coordinador'] === '1' ? 1 : 0;
+            $sql = "UPDATE horas_dia SET aprobado_coordinador=$aprobado, rechazado_coordinador=0 WHERE id=$id";
+            $response['success'] = $conn->query($sql) ? true : false;
+            if(!$response['success']) $response['error'] = $conn->error;
+        } elseif (isset($_POST['rechazado_coordinador'])) {
+            $rechazado = $_POST['rechazado_coordinador'] === '1' ? 1 : 0;
+            $sql = "UPDATE horas_dia SET rechazado_coordinador=$rechazado, aprobado_coordinador=0 WHERE id=$id";
+            $response['success'] = $conn->query($sql) ? true : false;
+            if(!$response['success']) $response['error'] = $conn->error;
+        } elseif (isset($_POST['comentario_coordinador'])) {
+            $comentario = $conn->real_escape_string($_POST['comentario_coordinador']);
+            $sql = "UPDATE horas_dia SET comentario_coordinador='$comentario' WHERE id=$id";
+            $response['success'] = $conn->query($sql) ? true : false;
+            if(!$response['success']) $response['error'] = $conn->error;
+        }
+    }
+    echo json_encode($response);
+    $conn->close();
+    exit;
+}
+
+// Mostrar la tabla editable directamente
+$proyecto_codigo = isset($_GET['proyecto']) ? $conn->real_escape_string($_GET['proyecto']) : '';
+$area_funcional = isset($_GET['area']) ? $conn->real_escape_string($_GET['area']) : '';
+// Agrupar por empleado y sumar horas/costo
+$sql = "SELECT 
+    numero_empleado AS numero_de_empleado,
+    UPPER(TRIM(nombre_completo)) AS nombre_completo,
+    SUM(tiempo_imputado_horas) AS total_horas,
+    SUM(IFNULL(tiempo_imputado_costo,0)) AS total_costo,
+    MAX(aprobado_coordinador) AS aprobado_coordinador,
+    MAX(rechazado_coordinador) AS rechazado_coordinador,
+    GROUP_CONCAT(DISTINCT comentario_coordinador SEPARATOR '; ') AS comentarios
+FROM horas_dia
+WHERE codigo_affaire='$proyecto_codigo' AND area_funcional='$area_funcional' AND Estado_Aprobacion = 'Aprobado En Curso'
+GROUP BY numero_empleado, nombre_completo";
+$result = $conn->query($sql);
+?>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="css/checkbox-blue.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<div class="container-fluid mt-4 px-3">
+        <!-- Modal Detalle -->
+            <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xxl-custom">
+</style>
+<style>
+/* Modal más ancho personalizado */
+/* Modal ancho pero no tanto */
+.modal-xxl-custom {
+    max-width: 85vw;
+    width: 85vw;
+    min-width: 900px;
+}
+@media (max-width: 1200px) {
+    .modal-xxl-custom {
+        max-width: 100vw;
+        width: 100vw;
+        min-width: unset;
+    }
+}
+</style>
+                    <div class="modal-content">
+                        <div class="modal-header p-2" style="background:#249c5b;color:#fff;align-items:center;">
+                            <i class="bi bi-info-circle-fill fs-3 me-2"></i>
+                            <h5 class="modal-title mb-0" id="modalDetalleLabel" style="font-weight:bold;"></h5>
+                            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body pb-0">
+                            <div id="detalle-contenido">Cargando...</div>
+                        </div>
+                        <div class="modal-footer justify-content-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><span class="me-2">&larr;</span>Regresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    <h4 class="mb-3">Aprobación de Costos Cargados por Colaborador</h4>
+    <div class="row mb-2">
+        <div class="col-12">
+            <div style="background:#f5f1ed;border-radius:7px;padding:18px 18px 10px 18px;border:1px solid #e0e0e0;max-width:500px;margin-bottom:10px;">
+                <div style="font-weight:600;margin-bottom:10px;font-size:0.93em;">EJERCICIO DEL MES</div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div style="background:#eddcc8;border-radius:6px;padding:12px 0;text-align:center;">
+                            <div style="font-size:1em;font-weight:bold;">$ <span id="costo-cargado-mes">0</span></div>
+                            <div style="font-size:0.8em;letter-spacing:0.2px;">COSTO CARGADO ESTE MES</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div style="background:#eddcc8;border-radius:6px;padding:12px 0;text-align:center;">
+                            <div style="font-size:1em;font-weight:bold;">$ <span id="costo-aprobado-mes">0</span></div>
+                            <div style="font-size:0.8em;letter-spacing:0.2px;">COSTO APROBADO</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-2">
+        <button id="btn-desmarcar-todos" class="btn btn-warning btn-sm" style="display:none;"><i class="bi bi-x-square"></i> Desmarcar todos los checks confirmados</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle mb-0" id="tabla-aprobacion">
+            <thead>
+                <tr>
+                    <th>Número de Empleado</th>
+                    <th>Nombre Colaborador</th>
+                    <th>Horas</th>
+                    <th>Costo Imputado Mes</th>
+                    <th>Aprobado</th>
+                    <th>Rechazado</th>
+                    <th>Comentario</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+</script>
+<script>
+// Calcular y mostrar los totales de la tabla principal
+function actualizarResumenCostos() {
+    let totalCargado = 0;
+    let totalAprobado = 0;
+    document.querySelectorAll('#tabla-aprobacion tbody tr').forEach(function(row) {
+        let costoCell = row.querySelector('td:nth-child(4)');
+        let aprobadoChk = row.querySelector('.aprobado-coord');
+        if (costoCell) {
+            let costo = parseFloat(costoCell.textContent.replace(/\./g, '').replace(',', '.')) || 0;
+            totalCargado += costo;
+            if (aprobadoChk && aprobadoChk.checked) {
+                totalAprobado += costo;
+            }
+        }
+    });
+    document.getElementById('costo-cargado-mes').textContent = totalCargado.toLocaleString('es-CO', {minimumFractionDigits:0});
+    document.getElementById('costo-aprobado-mes').textContent = totalAprobado.toLocaleString('es-CO', {minimumFractionDigits:0});
+}
+// Inicializar al cargar
+actualizarResumenCostos();
+// Actualizar al cambiar checks de aprobado o rechazado y bloquear campos si corresponde
+// Eliminado: manejo antiguo por id. El manejo masivo está implementado más abajo.
+// Si hay cambios por AJAX, también puedes llamar a actualizarResumenCostos() después de fetch si lo deseas.
+</script>
+            <tbody>
+            <?php if ($result && $result->num_rows > 0):
+                while($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['numero_de_empleado']) ?></td>
+                        <td><?= htmlspecialchars($row['nombre_completo']) ?></td>
+                        <td><?= number_format($row['total_horas'], 2, ',', '.') ?></td>
+                        <td><?= number_format($row['total_costo'], 0, '', '.') ?></td>
+                        <td class="text-center">
+                            <input type="checkbox" class="form-check-input aprobado-coord"
+                                data-numero-empleado="<?= $row['numero_de_empleado'] ?>"
+                                data-codigo-affaire="<?= htmlspecialchars($proyecto_codigo) ?>"
+                                data-area-funcional="<?= htmlspecialchars($area_funcional) ?>"
+                                <?= !empty($row['aprobado_coordinador']) ? 'checked disabled' : '' ?> >
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" class="form-check-input rechazado-coord"
+                                data-numero-empleado="<?= $row['numero_de_empleado'] ?>"
+                                data-codigo-affaire="<?= htmlspecialchars($proyecto_codigo) ?>"
+                                data-area-funcional="<?= htmlspecialchars($area_funcional) ?>"
+                                <?= !empty($row['rechazado_coordinador']) ? 'checked disabled' : '' ?> >
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm comentario-coord" data-numero-empleado="<?= $row['numero_de_empleado'] ?>" value="<?= htmlspecialchars((string)($row['comentarios'] ?? '')) ?>" <?= (!empty($row['aprobado_coordinador']) || !empty($row['rechazado_coordinador'])) ? 'disabled' : '' ?> >
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-primary btn-sm btn-detalle" 
+                                data-numero-empleado="<?= htmlspecialchars($row['numero_de_empleado']) ?>"
+                                data-codigo-affaire="<?= htmlspecialchars($proyecto_codigo) ?>"
+                                data-area-funcional="<?= htmlspecialchars($area_funcional) ?>"
+                                title="Ver Detalle">
+                                <i class="bi bi-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                <?php endwhile;
+            else: ?>
+                <tr><td colspan="8" class="text-center">No hay registros para editar.</td></tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+function showStatus(elem, ok, errorMsg) {
+    let icon = document.createElement('span');
+    icon.style.marginLeft = '6px';
+    if(ok) {
+        icon.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+    } else {
+        icon.innerHTML = '<i class="bi bi-x-circle-fill text-danger" title="' + (errorMsg ? errorMsg.replace(/'/g, "&apos;") : '') + '"></i>';
+        if(errorMsg) {
+            let msg = document.createElement('div');
+            msg.className = 'alert alert-danger mt-2';
+            msg.style.fontSize = '13px';
+            msg.textContent = errorMsg;
+            elem.parentNode.appendChild(msg);
+            setTimeout(()=>{msg.remove();}, 6000);
+        }
+    }
+    elem.parentNode.appendChild(icon);
+    setTimeout(()=>{icon.remove();}, 3000);
+}
+document.querySelectorAll('.aprobado-coord').forEach(function(chk) {
+    chk.addEventListener('change', function() {
+        var id = this.getAttribute('data-id');
+        var value = this.checked ? '1' : '0';
+        if (this.checked) {
+            if (!window.confirm('¿Está seguro que desea aprobar este registro?')) {
+                this.checked = false;
+                return;
+            }
+        }
+        var rech = document.querySelector('.rechazado-coord[data-id="'+id+'"]');
+        if (this.checked && rech) rech.checked = false;
+        var formData = new FormData();
+        formData.append('ajax', '1');
+        formData.append('id', id);
+        formData.append('aprobado_coordinador', value);
+        fetch('Aprobacion_lucca_Gasto_General.php', {method:'POST', body:formData})
+            .then(r=>r.json())
+            .then(data=>{ showStatus(this, data.success, data.error); })
+            .catch(e=>{ showStatus(this, false, e.message); });
+    });
+});
+document.querySelectorAll('.rechazado-coord').forEach(function(chk) {
+    chk.addEventListener('change', function() {
+        var id = this.getAttribute('data-id');
+        var value = this.checked ? '1' : '0';
+        if (this.checked) {
+            if (!window.confirm('¿Está seguro que desea rechazar este registro?')) {
+                this.checked = false;
+                return;
+            }
+        }
+        var apr = document.querySelector('.aprobado-coord[data-id="'+id+'"]');
+        if (this.checked && apr) apr.checked = false;
+        var formData = new FormData();
+        formData.append('ajax', '1');
+        formData.append('id', id);
+        formData.append('rechazado_coordinador', value);
+        fetch('Aprobacion_lucca_Gasto_General.php', {method:'POST', body:formData})
+            .then(r=>r.json())
+            .then(data=>{ showStatus(this, data.success, data.error); })
+            .catch(e=>{ showStatus(this, false, e.message); });
+    });
+});
+document.querySelectorAll('.comentario-coord').forEach(function(input) {
+    input.addEventListener('change', function() {
+        var id = this.getAttribute('data-id');
+        var value = this.value;
+        var formData = new FormData();
+        formData.append('ajax', '1');
+        formData.append('id', id);
+        formData.append('comentario_coordinador', value);
+        fetch('Aprobacion_lucca_Gasto_General.php', {method:'POST', body:formData})
+            .then(r=>r.json())
+            .then(data=>{ showStatus(this, data.success, data.error); })
+            .catch(e=>{ showStatus(this, false, e.message); });
+    });
+});
+</script>
+<script>
+// Modal y carga de detalle mejorado
+document.querySelectorAll('.btn-detalle').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var numero_empleado = this.getAttribute('data-numero-empleado');
+        var codigo_affaire = this.getAttribute('data-codigo-affaire');
+        var area_funcional = this.getAttribute('data-area-funcional');
+        var modalEl = document.getElementById('modalDetalle');
+        var modal = new bootstrap.Modal(modalEl);
+        var contenido = document.getElementById('detalle-contenido');
+        var titulo = document.getElementById('modalDetalleLabel');
+        contenido.innerHTML = 'Cargando...';
+        titulo.textContent = 'Detalle de Imputación';
+        fetch('get_detalle_imputacion_Gasto_General.php?numero_empleado=' + encodeURIComponent(numero_empleado) + '&codigo_affaire=' + encodeURIComponent(codigo_affaire) + '&area_funcional=' + encodeURIComponent(area_funcional))
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.detalles.length > 0) {
+                    // Tomar nombre y apellido del primer registro
+                    let nombre = (data.detalles[0].nom + ' ' + data.detalles[0].prenom).trim();
+                    titulo.innerHTML = 'Detalle de Imputación - <span style="text-transform:uppercase;">' + nombre + '</span>';
+                    let html = '<div class="table-responsive"><table class="table table-bordered table-sm align-middle">';
+                    html += '<thead><tr>' +
+                        '<th>N° Empleado</th>' +
+                        '<th>Nombre Colaborador</th>' +
+                        '<th>Proyecto</th>' +
+                        '<th>Fecha</th>' +
+                        '<th>Horas Imputadas</th>' +
+                        '<th>Costo Imputado</th>' +
+                        '<th>Comentario</th>' +
+                        '</tr></thead><tbody>';
+                    let totalHoras = 0;
+                    let totalCostos = 0;
+                    data.detalles.forEach(function(det) {
+                        // Horas: formato "0,00"
+                        let horas = parseFloat(det.horas.toString().replace('.', '').replace(',', '.')) || 0;
+                        // Costo: formato "1.234.567"
+                        let costo = parseFloat(det.costo.toString().replace(/\./g, '').replace(',', '.')) || 0;
+                        totalHoras += horas;
+                        totalCostos += costo;
+                        html += '<tr>' +
+                            '<td>' + det.numero_empleado + '</td>' +
+                            '<td>' + (det.nom + ' ' + det.prenom).toUpperCase() + '</td>' +
+                            '<td>' + det.proyecto + '</td>' +
+                            '<td>' + det.fecha + '</td>' +
+                            '<td><a style="color:#249c5b;font-weight:bold;" href="#">' + det.horas + '</a></td>' +
+                            '<td><span style="color:#249c5b;font-weight:bold;">$ ' + det.costo + '</span></td>' +
+                            '<td>' + (det.comentario || '-') + '</td>' +
+                            '</tr>';
+                    });
+                    html += '<tr style="background:#e9f7ef;font-weight:bold;">' +
+                        '<td colspan="4" class="text-end">TOTAL</td>' +
+                        '<td style="color:#249c5b;">' + totalHoras.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) + '</td>' +
+                        '<td style="color:#249c5b;">$ ' + totalCostos.toLocaleString('es-CO', {minimumFractionDigits:0}) + '</td>' +
+                        '<td></td>' +
+                        '</tr>';
+                    html += '</tbody></table></div>';
+                    contenido.innerHTML = html;
+                } else {
+                    titulo.textContent = 'Detalle de Imputación';
+                    contenido.innerHTML = '<div class="alert alert-warning">No se encontraron detalles para este registro.</div>';
+                }
+            })
+            .catch(e => {
+                titulo.textContent = 'Detalle de Imputación';
+                contenido.innerHTML = '<div class="alert alert-danger">Error al cargar el detalle.</div>';
+            });
+        modal.show();
+    });
+});
+</script>
+<script>
+// Botón para desmarcar todos los checks confirmados
+document.getElementById('btn-desmarcar-todos').addEventListener('click', function() {
+    if (!window.confirm('¿Está seguro que desea desmarcar todos los checks confirmados?')) return;
+    // Habilitar todos los inputs antes de desmarcar
+    document.querySelectorAll('.aprobado-coord, .rechazado-coord, .comentario-coord').forEach(function(inp) {
+        inp.disabled = false;
+    });
+    // Desmarcar todos los aprobados
+    document.querySelectorAll('.aprobado-coord:checked').forEach(function(chk) {
+        chk.checked = false;
+        var id = chk.getAttribute('data-id');
+        var formData = new FormData();
+        formData.append('ajax', '1');
+        formData.append('id', id);
+        formData.append('aprobado_coordinador', '0');
+        fetch('Aprobacion_lucca_Gasto_General.php', {method:'POST', body:formData})
+            .then(r=>r.json())
+            .then(data=>{ showStatus(chk, data.success, data.error); actualizarResumenCostos(); })
+            .catch(e=>{ showStatus(chk, false, e.message); actualizarResumenCostos(); });
+    });
+    // Desmarcar todos los rechazados
+    document.querySelectorAll('.rechazado-coord:checked').forEach(function(chk) {
+        chk.checked = false;
+        var id = chk.getAttribute('data-id');
+        var formData = new FormData();
+        formData.append('ajax', '1');
+        formData.append('id', id);
+        formData.append('rechazado_coordinador', '0');
+        fetch('Aprobacion_lucca_Gasto_General.php', {method:'POST', body:formData})
+            .then(r=>r.json())
+            .then(data=>{ showStatus(chk, data.success, data.error); actualizarResumenCostos(); })
+            .catch(e=>{ showStatus(chk, false, e.message); actualizarResumenCostos(); });
+    });
+    // Si no hay ninguno marcado, refrescar igual
+    setTimeout(actualizarResumenCostos, 400);
+});
+</script>
+<?php $conn->close(); ?>

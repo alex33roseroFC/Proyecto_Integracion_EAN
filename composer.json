@@ -1,0 +1,12 @@
+{
+    "name": "alex.rosero/control_presupuestal_horas",
+    "authors": [
+        {
+            "name": "Alex Rosero",
+            "email": "alex@correo.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.1"
+    }
+}

@@ -1,1 +1,44 @@
 
+INSTALACIÓN Y EJECUCIÓN DEL PROYECTO
+
+1. Clonar o descargar el repositorio del proyecto.
+
+2. Abrir una terminal dentro de la carpeta raíz del proyecto.
+
+3. Crear el entorno virtual:
+
+python -m venv venv
+
+4. Activar el entorno virtual:
+
+En Windows:
+venv\Scripts\activate
+
+En Linux / Mac:
+source venv/bin/activate
+
+5. Instalar las dependencias necesarias:
+
+pip install -r requirements.txt
+
+6. Configurar la base de datos:
+- Importar el archivo .sql incluido en el proyecto dentro de MySQL.
+- Verificar las credenciales de conexión en el archivo de configuración.
+
+7. Ejecutar el proyecto:
+
+python app.py
+
+o según el archivo principal del sistema:
+
+python main.py
+
+8. Abrir el navegador y acceder a:
+
+http://localhost:5000
+
+o el puerto configurado en el proyecto.
+
+9. Para desactivar el entorno virtual:
+
+deactivate

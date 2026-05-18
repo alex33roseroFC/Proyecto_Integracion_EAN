@@ -1,0 +1,92 @@
+/* Sidebar menu styles for Metis-like UI */
+body {
+    margin: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f8fafc;
+}
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 270px;
+    height: 100vh;
+    background: #22c55e;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: width 0.08s;
+}
+.sidebar.collapsed {
+    width: 70px;
+}
+.sidebar .logo {
+    display: flex;
+    align-items: center;
+    padding: 24px 20px 16px 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 1px;
+}
+.sidebar .menu {
+    flex: 1;
+    padding: 0 0 20px 0;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.sidebar ul li {
+    margin-bottom: 4px;
+}
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px 0 0 8px;
+    font-size: 1.08rem;
+    transition: background 0.2s, color 0.2s;
+    position: relative;
+}
+.sidebar ul li a.active, .sidebar ul li a:hover {
+    background: #6d28d9;
+    color: #fff;
+}
+.sidebar ul li a .icon {
+    margin-right: 16px;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+.sidebar .toggle-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 12px 20px;
+    cursor: pointer;
+    outline: none;
+    align-self: flex-end;
+}
+.sidebar.collapsed .logo span,
+.sidebar.collapsed .menu span {
+    display: none;
+}
+.sidebar.collapsed ul li a {
+    justify-content: center;
+    padding: 12px 0;
+}
+.sidebar.collapsed ul li a .icon {
+    margin: 0;
+}
+.sidebar .admin-section {
+    margin-top: auto;
+    padding: 16px 24px 8px 24px;
+    font-size: 0.95rem;
+    color: #d1fae5;
+    opacity: 0.7;
+}

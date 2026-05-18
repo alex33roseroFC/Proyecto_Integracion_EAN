@@ -1,0 +1,188 @@
+body{ font: 14px sans-serif; background-color: #f4f4f4; }
+.container{ width: 99%; max-width: 1800px; margin: 20px auto; background-color: #fff; padding: 28px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+.navbar { background-color: #333; overflow: hidden; padding: 10px 20px; }
+.navbar a { float: left; color: #f2f2f2; text-align: center; padding: 14px 16px; text-decoration: none; font-size: 17px; }
+.navbar a:hover { background-color: #ddd; color: black; }
+.navbar a.btn-danger { float: right; }
+.wrapper{ width: 360px; padding: 20px; margin: 50px auto; border: 1px solid #ccc; border-radius: 5px; }
+.page-header{ text-align: center; margin-bottom: 20px;}
+
+/* Login logo inside the .wrapper box */
+.login-logo { text-align: center; margin-bottom: 18px; }
+.login-logo img { width: 200px; max-width: 100%; height: auto; display: inline-block; border-radius: 6px; }
+
+@media (max-width: 480px) {
+    .login-logo img { width: 140px; }
+}
+.form-group{ margin-bottom: 15px; }
+.form-group label{ display: block; margin-bottom: 5px; }
+.form-group .form-control{ width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+.invalid-feedback{ color: red; font-size: 12px; }
+.btn{ padding: 10px 15px; border: none; color: white; border-radius: 4px; text-decoration: none; display: inline-block; }
+.btn-primary{ background-color: #007bff; }
+.btn-danger{ background-color: #dc3545; }
+.btn-info{ background-color: #17a2b8; }
+.alert-danger{ background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+
+/* Center buttons on pages like index.php */
+.buttons-center {
+    display: flex;
+    gap: 14px;
+    justify-content: center; /* center horizontally */
+    align-items: center;
+    margin: 30px 0; /* vertical spacing */
+}
+.buttons-center .btn { min-width: 220px; text-align: center; }
+
+@media (max-width: 480px) {
+    .buttons-center { flex-direction: column; gap: 10px; padding: 0 16px; }
+    .buttons-center .btn { width: 100%; min-width: 0; }
+}
+
+/* Estilos para formularios y tablas */
+.data-form { padding: 0; background: transparent; border-radius: 5px; margin-bottom: 20px; }
+
+.form-section {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.form-section legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    padding: 0 10px;
+    margin-left: 10px;
+}
+
+.form-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group input[type='text'],
+.form-group input[type='date'],
+.form-group input[type='number'],
+.form-group input[type='email'],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Importante para que el padding no afecte el ancho */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.data-table {
+    width: 100%;
+    border-collapse: separate; /* permite border-radius visibles */
+    border-spacing: 0;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+     margin-bottom: 32px; /* margen inferior para separar la tabla del borde del modal */
+}
+.data-table thead th {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, #f8f9fa, #eef2f6);
+    color: #333;
+    font-weight: 600;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.data-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+}
+.data-table tbody tr:nth-child(even) { background-color: #fbfcfd; }
+.data-table tbody tr:nth-child(odd) { background-color: #ffffff; }
+.data-table tbody tr:hover { background-color: #f1f7ff; }
+.data-table td .btn { padding: 6px 10px; font-size: 13px; border-radius: 6px; }
+
+/* Estilo específico para el botón "Ver Detalle" */
+.btn-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, #0066cc, #0099ff);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 6px 14px rgba(0,153,255,0.14);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+    text-decoration: none;
+}
+.btn-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,153,255,0.18);
+}
+.btn-detail:active { transform: translateY(0); }
+.btn-detail .icon {
+    width: 14px; height: 14px; display: inline-block; background-size: contain; background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 5c-7 0-11 6-11 7s4 7 11 7 11-6 11-7-4-7-11-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-6a2 2 0 1 0 .001 3.999A2 2 0 0 0 12 10z'/></svg>");
+}
+
+/* Variante outline para fondos claros */
+.btn-detail.outline {
+    background: transparent;
+    color: #007bff;
+    border: 1px solid rgba(0,123,255,0.12);
+    box-shadow: none;
+}
+
+/* Botón para subir presupuesto (secundario) */
+.btn-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, #28a745, #38d39f);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 6px 14px rgba(56,211,159,0.12);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    text-decoration: none;
+}
+.btn-upload:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(56,211,159,0.16); }
+.btn-upload .icon-upload {
+    width: 14px; height: 14px; display: inline-block; background-size: contain; background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4h5.66V9h3.84L12 2z'/></svg>");
+}
+.btn-upload.small { padding: 6px 10px; font-size: 13px; border-radius: 6px; }
+
+/* Acción: centrar números y formatos */
+.data-table td:nth-child(1),
+.data-table td:nth-child(4),
+.data-table td:nth-child(8) { text-align: center; }
+
+/* Responsive: en pantallas pequeñas convertir cada fila en card */
+@media (max-width: 800px) {
+    .data-table thead { display: none; }
+    .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+    .data-table tr { margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); overflow: hidden; }
+    .data-table td { display: flex; justify-content: space-between; padding: 12px 14px; border-bottom: 0; background: #fff; }
+    .data-table td:before { content: attr(data-label); font-weight: 600; color: #666; margin-right: 8px; }
+}

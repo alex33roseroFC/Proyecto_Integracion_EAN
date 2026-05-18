@@ -1,0 +1,274 @@
+/* Estilos de Login - Compatible con múltiples navegadores */
+
+/* Reset y normalización */
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f4f6fa !important;
+  background-color: #f4f6fa !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.login-container {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 100vh;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background: #f4f6fa;
+  background-color: #f4f6fa;
+  padding: 20px;
+}
+
+.login-card {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 700px;
+  max-width: 95%;
+  min-height: 480px;
+  -webkit-box-shadow: 0 2px 24px 0 rgba(60,72,100,0.12);
+  box-shadow: 0 2px 24px 0 rgba(60,72,100,0.12);
+  -webkit-border-radius: 18px;
+  -moz-border-radius: 18px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  background-color: #ffffff;
+}
+
+.login-left {
+  background: #43b77a;
+  background-color: #43b77a;
+  width: 30%;
+  min-width: 120px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.login-right {
+  width: 70%;
+  padding: 40px 32px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.logo-container {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.logo-separator {
+  width: 2px;
+  height: 60px;
+  background: #e0e0e0;
+  background-color: #e0e0e0;
+  margin: 0 8px;
+}
+
+.form-label {
+  font-weight: 600;
+  font-weight: bold;
+  color: #17823d;
+  margin-bottom: 6px;
+  display: block;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-control {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-size: 16px;
+  margin-bottom: 18px;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  line-height: 1.5;
+}
+
+.form-control:focus {
+  outline: 0;
+  border-color: #4C8AA3;
+  -webkit-box-shadow: 0 0 0 0.2rem rgba(76, 138, 163, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(76, 138, 163, 0.25);
+}
+
+.btn-login {
+  background: #4C8AA3;
+  background-color: #4C8AA3;
+  color: #fff;
+  border: none;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-weight: bold;
+  font-size: 1rem;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  padding: 10px 0;
+  -webkit-box-shadow: 0 2px 12px 0 rgba(76, 138, 163, 0.10);
+  box-shadow: 0 2px 12px 0 rgba(76, 138, 163, 0.10);
+  -webkit-transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  -moz-transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  -o-transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
+  width: 100%;
+  margin-top: 8px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.btn-login:hover, 
+.btn-login:focus {
+  background: #35708a;
+  background-color: #35708a;
+  -webkit-transform: scale(1.045);
+  -moz-transform: scale(1.045);
+  -ms-transform: scale(1.045);
+  -o-transform: scale(1.045);
+  transform: scale(1.045);
+  -webkit-box-shadow: 0 6px 24px 0 rgba(76, 138, 163, 0.16);
+  box-shadow: 0 6px 24px 0 rgba(76, 138, 163, 0.16);
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn-actions {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.alert {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+}
+
+/* Media Queries para responsive */
+@media only screen and (max-width: 800px) {
+  .login-card {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 98vw;
+  }
+  
+  .login-left, 
+  .login-right {
+    width: 100%;
+    min-height: 180px;
+  }
+  
+  .login-right {
+    padding: 24px 12px;
+  }
+  
+  .logo-container {
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .btn-actions {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  
+  .btn-login {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+}

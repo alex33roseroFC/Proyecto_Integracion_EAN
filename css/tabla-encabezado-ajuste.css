@@ -1,0 +1,7 @@
+/* Ajuste de tamaño de texto para encabezados de tablas */
+th, .resumen-thead th {
+    font-size: 13px !important;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: normal;
+}

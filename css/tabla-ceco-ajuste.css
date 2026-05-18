@@ -1,0 +1,11 @@
+.resumen-table td:nth-child(2),
+.resumen-table th:nth-child(2) {
+    max-width: 70px;
+    width: 70px;
+    min-width: 60px;
+    word-break: break-all;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
